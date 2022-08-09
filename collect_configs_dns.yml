@@ -1,0 +1,26 @@
+---
+# collects the config files from all hosts.
+
+- hosts:
+   - dns-01.vj.home
+  tasks:
+  - name: Retrieve dhcpd config 
+    ansible.builtin.fetch:
+       dest: "../configs"
+       src: "/etc/dhcp/dhcpd.conf"
+  - name: Retrieve bind9 config
+    ansible.builtin.synchronize:
+       mode: pull
+       src: "/etc/bind"
+       dest: "../configs/dns-01/etc/bind"
+  - name: Retrieve DNS database
+    ansible.builtin.synchronize:
+       mode: pull
+       src: "/var/lib/bind"
+       dest: "../configs/dns-01/var/lib/bind"
+  - name: Retrieve DHCP database
+    ansible.builtin.synchronize:
+       mode: pull
+       src: "/var/lib/dhcp"
+       dest: "../configs/dns-01/var/lib/dhcp"
+

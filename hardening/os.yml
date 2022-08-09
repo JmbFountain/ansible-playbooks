@@ -1,0 +1,8 @@
+---
+- hosts: 
+    - rocky_container
+    - debian_container
+  collections:
+    - devsec.hardening
+  roles:
+    - os_hardening

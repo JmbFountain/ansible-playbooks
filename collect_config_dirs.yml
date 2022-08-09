@@ -1,0 +1,19 @@
+---
+
+- hosts:
+   - all
+  vars:
+  tasks:
+    - name: "Get files in directories"
+      ansible.builtin.find:
+        paths: "{{ item }}"
+        recurse: yes
+      register: confd_files
+      loop: "{{ lookup('vars', lookup('varnames', 'confd$'), wantlist=True, errors='ignore') }}"
+      ignore_errors: yes
+    
+    - name: "Fetch config files"
+      ansible.builtin.fetch:
+        dest: "../../configs"
+        src: "{{ item }}"
+      with_items: "{{ confd_files | json_query('results[*].files[*].path') | list }}"

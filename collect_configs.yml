@@ -1,0 +1,19 @@
+---
+# collects the config files from all hosts.
+
+- hosts:
+   - all
+
+  tasks:
+    - name: Get config files
+        ansible.builtin.find:
+          paths: "{{ configs }}"
+          recursive: yes
+        register: config_files
+
+    - name: Retrieve Config files 
+      ansible.builtin.fetch:
+        mode: pull
+        dest: "../configs/"
+        src: "{{ item.path }}"
+      with_items: "{{ config_files.files }}"

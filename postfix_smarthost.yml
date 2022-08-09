@@ -1,0 +1,43 @@
+---
+# This playbook rolls out the correct Mailserver to the Hosts
+
+- hosts:
+    - debian_container
+    - debian_vm
+    - ipa-01
+    - jmb-keycloak-01
+
+  tasks:
+    - name: install Postfix on Debian
+      apt:
+        name: postfix
+        state: present
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: install Postfix on RHEL-like
+      dnf:
+        name: postfix
+        state: present
+      when: (ansible_facts['os_family'] == "RedHat") or (ansible_facts['os_family'] == "Rocky")
+
+    - name: start postfix
+      service:
+        name: postfix
+        state: started
+        enabled: true
+
+    - name: set postfix configuration
+      template:
+        src: ../resources/postfix_main.cf.j2
+        dest: /etc/postfix/main.cf
+      when: "'mailserver' not in group_names"
+      notify:
+        - restart postfix
+
+  handlers:
+    - name: restart postfix
+      service:
+        name: postfix
+        state: restarted
+
+

@@ -1,0 +1,37 @@
+---
+# This playbook copies standard config files to machines
+
+- hosts:
+   - debian_container
+   - debian_vm
+  tasks:
+   - name: deploy bashrc for root
+     copy: src=../../srvcfg/profile dest=/root/.bashrc
+
+   - name: deploy bash_aliases for root
+     copy: src=../../srvcfg/bash_aliases dest=/root/.bash_aliases
+
+     #- name: deploy default apt sources
+     #copy: src=/srv/srvcfg/sources.list dest=/etc/apt/sources.list
+
+   - name: deploy sshd config
+     copy: src=../../srvcfg/sshd_conf dest=/etc/ssh/
+
+   - name: deploy motd
+     copy: src=../../srvcfg/motd dest=/etc/update-motd.d/motd
+
+   - name: Check if there is still a motd in the default location
+     stat:
+      path: /etc/motd
+     register: old_motd
+
+   - name: Rename default Motd so it won't be displayed anymore
+     command: mv /etc/motd /etc/motd-
+     when: old_motd.stat.exists
+   
+   - name: add Anisble SSH key
+     authorized_key:
+       user: root
+       state: present
+       key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDAdt0xlQd1vtCo3t4F4/6svxjQ0D3NZY2n4yUE3a0dMD96TCR/Z9HOdJ3uqtdgAQnfzhlcIMbkOzN6I7BPI3/SxfvOLwW1LVnnVH2I51MiqfkdWoBmU+htu7TPmcCXG5ruUqTkLObUtTJiCqNWiHsggMyvW0RT9uaSBgjOaeKYtpOrjiDNhvJXhfGk/52coaTMM6TAEAKJfKYUOeR3In9uUre4X/r9aM/XVhduF9brBISRMQyc7dFIFIYUay1O6Ot6DDAKmK3uecOjved7HNJjUr9tkBwXaYNt5GNX6Vvz/i6ELsFY+OS05smm2eDa9Y/otCH6WViZPrBX+VGA0iIT root@jmb-ansible-01"
+

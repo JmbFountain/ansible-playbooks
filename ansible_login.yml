@@ -1,0 +1,13 @@
+---
+# Deploys Ansible server ssh key to containers/vms
+
+- hosts:
+  - all
+  vars:
+    ansible_user: root
+  tasks:
+    - name: add ansible SSH key to root user
+      ansible.builtin.authorized_key:
+        user: root
+        state: present
+        key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDAdt0xlQd1vtCo3t4F4/6svxjQ0D3NZY2n4yUE3a0dMD96TCR/Z9HOdJ3uqtdgAQnfzhlcIMbkOzN6I7BPI3/SxfvOLwW1LVnnVH2I51MiqfkdWoBmU+htu7TPmcCXG5ruUqTkLObUtTJiCqNWiHsggMyvW0RT9uaSBgjOaeKYtpOrjiDNhvJXhfGk/52coaTMM6TAEAKJfKYUOeR3In9uUre4X/r9aM/XVhduF9brBISRMQyc7dFIFIYUay1O6Ot6DDAKmK3uecOjved7HNJjUr9tkBwXaYNt5GNX6Vvz/i6ELsFY+OS05smm2eDa9Y/otCH6WViZPrBX+VGA0iIT root@jmb-ansible-01"

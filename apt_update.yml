@@ -1,0 +1,49 @@
+---
+# This playbooks updates apt repo and cache
+
+- hosts:
+   - debian_container
+   - debian_vm
+   - pve-01
+  tasks:
+   - name: APT Update apt repo and cache
+     apt: 
+        update_cache: yes 
+        force_apt_get: yes 
+        cache_valid_time: 3600
+     when: ansible_facts['os_family'] == "Debian"
+   
+   - name: APT Upgrade all packages 
+     apt: 
+       upgrade: yes
+     when: 
+      - autopatch == true
+      - ansible_facts['os_family'] == "Debian"
+     register: upgrade_log
+
+   - name: APT clean up cache
+     apt:
+        autoclean: yes
+     when: ansible_facts['os_family'] == "Debian"
+    
+   - name: APT remove unneeded packages
+     apt: 
+        autoremove: yes
+     when: ansible_facts['os_family'] == "Debian"
+
+   - name: DNF upgrade packages
+     dnf:
+       name: "*"
+       state: latest
+     when: 
+      - ansible_facts['os_family'] == "RedHat"
+      - autopatch == true
+
+   - name: Send results as mail
+     community.general.mail:
+       host: "jmb-mail-02.vj.home"
+       to: "johannes@jmbfountain.de"
+       subject: "Updates {{ ansible_hostname }}"
+       body: "{{ upgrade_log }}"
+       sender: "ansible@jmbfountain.de"
+     delegate_to: "localhost"

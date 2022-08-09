@@ -1,0 +1,24 @@
+---
+# collects the config files from all hosts.
+
+- hosts:
+   - jmb-cloud-01.vj.home
+  vars:
+   - config_dirs: 
+      - /etc/apache2/*
+      - /var/www/html/nextcloud/config/*
+  tasks:
+   - name: Convert config directories to config files
+     shell: "find {{ config_dirs }}"
+     register: config_dirs_files  
+
+   - name: Retrieve Config files 
+     ansible.builtin.fetch:
+       dest: ../configs/
+       src: "{{ config_files }}"
+
+   - name: Retrieve Config files from Directories
+     ansible.builtin.fetch:
+       dest: ../configs/
+       src: "{{ config_dirs_files }}"
+     with_items: "{{ config_dirs_files.stdout_lines }}"

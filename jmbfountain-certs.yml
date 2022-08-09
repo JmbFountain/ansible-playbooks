@@ -1,0 +1,9 @@
+---
+# This playbook
+
+- hosts:
+   - haproxy-01
+   - jmb-mail-01
+  tasks:
+   - name: Print Terminal
+     shell: echo $TERM

@@ -1,0 +1,41 @@
+---
+# This playbook
+
+- hosts:
+   - debian_container
+   - debian_vm
+   - rocky_container
+  tasks:
+
+   - name: Make sure the folder exists (Debian, Ubuntu)
+     when: ansible_os_family == "Debian"
+     file:
+       path: /usr/local/share/ca-certificates
+       state: directory
+
+   - name: Make sure the folder exists (Red Hat)
+     file:
+       path: /etc/pki/ca-trust/source/anchors
+       state: directory
+
+   - name: Copy Certificate to Debian Machines
+     when: ansible_os_family == "Debian"
+     copy:
+       src: "../resources/ca.crt"
+       dest: "/usr/local/share/ca-certificates/ipa-vj-home.crt"
+   
+   - name: Copy CA Certificate to RH Machines
+     when: ansible_os_family == "RedHat"
+     copy:
+       src: "../resources/ca.crt"
+       dest: "/etc/pki/ca-trust/source/anchors/ipa-vj-home.crt"
+   
+  
+   - name: Update RedHat CA trust
+     when: ansible_os_family == "RedHat"
+     command: update-ca-trust enable
+   
+   - name: Update Debian CA trust
+     when: ansible_os_family == "Debian"
+     command: update-ca-certificates
+   

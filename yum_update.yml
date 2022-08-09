@@ -1,0 +1,11 @@
+---
+# This playbook updates RHEL-Like OSes
+
+- hosts:
+    - rocky_container
+  tasks:
+    - name: Upgrade all packages
+      dnf:
+        name: "*"
+        state: latest
+      when: autopatch == true

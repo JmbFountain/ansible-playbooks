@@ -1,0 +1,11 @@
+---
+# collects the config files from all hosts.
+
+- hosts:
+   - jmb-gitlab-01.vj.home 
+  tasks:
+  - name: Retrieve Config files 
+    ansible.builtin.fetch:
+       dest: ../configs/
+       src: "/etc/gitlab/gitlab.rb"
+

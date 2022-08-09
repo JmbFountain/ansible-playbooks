@@ -1,0 +1,13 @@
+---
+# collect individually defined Configs
+
+- hosts:
+    - all:
+  tasks:
+    - name: "Collect individual Configuration files"
+      ansible.builtin.fetch:
+        dest: "../../configs/"
+        src: "{{ item }}"
+      with_items: "{{ lookup('vars', lookup('varnames', 'conf$'), wantlist=True, errors='ignore') }}"
+      ignore_errors: yes
+

@@ -1,0 +1,8 @@
+---
+- hosts:
+    - jmb-web-01
+  collections:
+    - devsec.hardening
+  roles:
+    - nginx_hardening
+
